@@ -1,0 +1,26 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    margin: 10px;
+    color: white;
+}
+
+.board-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #465879;
+    width: 64px;
+    height: 64px;
+    border: 1px solid black;
+}
+
+.board-row {
+    display: contents;
+}
+
+.board-row:nth-child(odd) .board-cell:nth-child(odd),
+.board-row:nth-child(even) .board-cell:nth-child(even) {
+    background-color: #68c2c5;
+}

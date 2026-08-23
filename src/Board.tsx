@@ -12,7 +12,7 @@ import WhiteRook from "./assets/pieces/Chess_rlt45.svg?react";
 import WhiteBishop from "./assets/pieces/Chess_blt45.svg?react";
 import WhiteKnight from "./assets/pieces/Chess_nlt45.svg?react";
 import WhitePawn from "./assets/pieces/Chess_plt45.svg?react";
-import { blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, emptyCell, whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook, type BoardCellState, type GameAction, type PlayerTurn } from './state';
+import { blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, emptyCell, whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook, type BoardCellState, type GameAction, type GamePiece, type PlayerTurn } from './state';
 import { useState } from 'react';
 
 
@@ -81,10 +81,11 @@ const boardRows = Array(8).fill(0).map((_, i) => i);
 type BoardProps = {
     boardState: string;
     playerTurn: PlayerTurn;
-    legalMoves: Array<GameAction[]>;
+    legalMoves: Array<number[]>;
+    performMove: (move: GameAction) => void;
 }
 
-export const Board = ({boardState, playerTurn, legalMoves}: BoardProps) => {
+export const Board = ({boardState, playerTurn, legalMoves, performMove}: BoardProps) => {
     const [selectedCell, setSelectedCell] = useState(-1);
     if (boardState.length != 8 * 8) {
         return "Invalid board size";
@@ -95,16 +96,28 @@ export const Board = ({boardState, playerTurn, legalMoves}: BoardProps) => {
     return <div className="board">
         {boardRows.map(rowIndex => (
             <div key={rowIndex} className="board-row">
-                {boardRows.map(columnIndex => (
-                    <BoardCell 
+                {boardRows.map(columnIndex => {
+                    const cellIndex = rowIndex * 8 + columnIndex;
+                    const isLegalMove = legalDestinations.includes(cellIndex);
+                    const isSelected = selectedCell === cellIndex;
+                    return <BoardCell 
                         key={columnIndex} 
-                        cellState={boardState[rowIndex * 8 + columnIndex] as BoardCellState}
-                        isSelected={selectedCell === (rowIndex * 8 + columnIndex)}
-                        isHighlighted={legalDestinations.some(({to}) => to === (rowIndex * 8 + columnIndex))}
-                        onClick={() => setSelectedCell(rowIndex * 8 + columnIndex)}
+                        cellState={boardState[cellIndex] as BoardCellState}
+                        isSelected={isSelected}
+                        isHighlighted={isLegalMove}
+                        onClick={() => {
+                            if (isSelected) {
+                                setSelectedCell(-1);
+                                return;
+                            }
+                            if (isLegalMove) {
+                                performMove({from: selectedCell, to: cellIndex, piece: boardState[selectedCell] as GamePiece})
+                                return;
+                            }
+                            setSelectedCell(rowIndex * 8 + columnIndex);
+                        }}
                     />
-                ))
-                }
+                })}
             </div>)
 
         )}

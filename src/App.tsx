@@ -6,11 +6,11 @@ import { blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, 
 const initialBoardState = [
   "RNBQKBNR",
   "PPPPPPPP",
-  "OOOpOOOO",
   "OOOOOOOO",
-  "OOObOOOO",
   "OOOOOOOO",
-  "pppOpppp",
+  "OOOOOOOO",
+  "OOOOOOOO",
+  "pppppppp",
   "rnbqkbnr"
 ].join("");
 
@@ -25,26 +25,25 @@ const containsBlackPiece = (cellState: BoardCellState) => {
 
 const getWhitePawnLegalMovesAt = (boardState: string, x: number, y: number) => {
   const cellIndex = y * 8 + x;
-  let legalMoves: GameAction[] = [];
+  let legalMoves: number[] = [];
   if (y === 6 && boardState[cellIndex - 16] === emptyCell) {
-    legalMoves.push({from: cellIndex, to: cellIndex - 16})
+    legalMoves.push(cellIndex - 16)
   }
   if (boardState[cellIndex - 8] === emptyCell) {
-    legalMoves.push({from: cellIndex, to: cellIndex - 8});
+    legalMoves.push(cellIndex - 8);
   }
   if (x > 0 && containsBlackPiece(boardState[cellIndex - 8 + 1] as BoardCellState)) {
-    legalMoves.push({from: cellIndex, to: cellIndex - 8 + 1});
+    legalMoves.push(cellIndex - 8 + 1);
   }
   if (x > 0 && containsBlackPiece(boardState[cellIndex - 8 - 1] as BoardCellState)) {
-    legalMoves.push({from: cellIndex, to: cellIndex - 8 - 1});
+    legalMoves.push(cellIndex - 8 - 1);
   }
   // TODO: en-passant
   return legalMoves;
 }
 
 const getWhiteBishopLegalMovesAt = (boardState: string, x: number, y: number) => {
-  const cellIndex = y * 8 + x;
-  let legalMoves: GameAction[] = [];
+  let legalMoves: number[] = [];
   
   const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 
@@ -53,7 +52,7 @@ const getWhiteBishopLegalMovesAt = (boardState: string, x: number, y: number) =>
 
     while(currentX >= 0 && currentX < 8 && currentY >= 0 && currentY < 8 
       && !containsWhitePiece(boardState[currentY * 8 + currentX] as BoardCellState)) {
-        legalMoves.push({from: cellIndex, to: currentY * 8 + currentX});
+        legalMoves.push(currentY * 8 + currentX);
         if (containsBlackPiece(boardState[currentY * 8 + currentX] as BoardCellState)) {
           break;
         }
@@ -76,7 +75,7 @@ const getWhiteLegalMovesAt = (boardState: string, cellState: GamePiece, x: numbe
 
 const getBlackLegalMovesAt = (boardState: string, cellState: GamePiece, x: number, y: number) => {
   const cellIndex = y * 8 + x;
-  let legalMoves: GameAction[] = [];
+  let legalMoves: number[] = [];
   return legalMoves;
 }
 
@@ -96,7 +95,7 @@ function App() {
   const [playerTurn, setPlayerTurn] = useState<PlayerTurn>(0);
   const [boardState, setBoardState] = useState(initialBoardState);
 
-  const legalMoves: Array<GameAction[]> = Array(64).fill(0).map(() => []);
+  const legalMoves: Array<number[]> = Array(64).fill(0).map(() => []);
 
   for (let x = 0; x < 8; x++) {
     for (let y = 0; y < 8; y++) {
@@ -105,10 +104,14 @@ function App() {
     }
   }
 
-  console.log(legalMoves);
-
+  const performMove = (action: GameAction) => {
+    let newBoardState = boardState.slice(0, action.to) + action.piece + boardState.slice(action.to + 1, 64);
+    newBoardState = newBoardState.slice(0, action.from) + emptyCell + newBoardState.slice(action.from + 1, 64);
+    setBoardState(newBoardState);
+  };
+  
   return <div className="app-container">
-    <Board boardState={boardState} playerTurn={playerTurn} legalMoves={legalMoves}/>
+    <Board boardState={boardState} playerTurn={playerTurn} legalMoves={legalMoves} performMove={performMove}/>
   </div>;
 }
 

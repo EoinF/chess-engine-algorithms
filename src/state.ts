@@ -37,6 +37,7 @@ export const playerTurnBlack = 1;
 export type PlayerTurn = typeof playerTurnBlack | typeof playerTurnWhite;
 
 export type GameAction = {
+  piece: GamePiece;
   from: number;
   to: number;
 }

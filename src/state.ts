@@ -30,3 +30,13 @@ export const emptyCell = "O";
 type EmptyCell = typeof emptyCell
 
 export type BoardCellState = GamePiece | EmptyCell;
+
+
+export const playerTurnWhite = 0;
+export const playerTurnBlack = 1;
+export type PlayerTurn = typeof playerTurnBlack | typeof playerTurnWhite;
+
+export type GameAction = {
+  from: number;
+  to: number;
+}

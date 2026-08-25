@@ -1,35 +1,25 @@
-export const blackPawn = "P";
-export const blackKnight = "N";
-export const blackBishop = "B";
-export const blackRook = "R";
-export const blackQueen = "Q";
-export const blackKing = "K";
-
-export const whitePawn = "p";
-export const whiteKnight = "n";
-export const whiteBishop = "b";
-export const whiteRook = "r";
-export const whiteQueen = "q";
-export const whiteKing = "k";
+export const pawn = "P";
+export const knight = "N";
+export const bishop = "B";
+export const rook = "R";
+export const queen = "Q";
+export const king = "K";
 
 
-export type GamePiece = typeof blackPawn |
-typeof blackKnight |
-typeof blackBishop |
-typeof blackRook |
-typeof blackQueen |
-typeof blackKing |
-typeof whitePawn |
-typeof whiteKnight |
-typeof whiteBishop |
-typeof whiteRook |
-typeof whiteQueen |
-typeof whiteKing;
+export type GamePiece = typeof pawn |
+typeof knight |
+typeof bishop |
+typeof rook |
+typeof queen |
+typeof king;
 
 export const emptyCell = "O";
-type EmptyCell = typeof emptyCell
+export type EmptyCell = typeof emptyCell
 
-export type BoardCellState = GamePiece | EmptyCell;
+export type BoardCellState = {
+    piece: GamePiece | EmptyCell;
+    isWhite: boolean;
+}
 
 
 export const playerTurnWhite = 0;

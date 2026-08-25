@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import './App.css';
 import { Board } from './Board';
-import { blackBishop, blackKing, blackKnight, blackPawn, blackQueen, blackRook, emptyCell, playerTurnWhite, whiteBishop, whiteKing, whiteKnight, whitePawn, whiteQueen, whiteRook, type BoardCellState, type GameAction, type GamePiece, type PlayerTurn } from './state';
+import { bishop, emptyCell, pawn, type BoardCellState, type EmptyCell, type GameAction, type GamePiece } from './state';
 
-const initialBoardState = [
+const initialBoardState: BoardCellState[] = [
   "RNBQKBNR",
   "PPPPPPPP",
   "OOOOOOOO",
@@ -12,37 +12,42 @@ const initialBoardState = [
   "OOOOOOOO",
   "pppppppp",
   "rnbqkbnr"
-].join("");
+].join("").split("").map((cell) => ({
+  piece: cell.toUpperCase() as GamePiece | EmptyCell,
+  isWhite: cell.charCodeAt(0) >= 0x61, // cell > 'a'
+}));
 
-const containsWhitePiece = (cellState: BoardCellState) => {
-  // TODO: More optimal to bitwise AND with 0x30
-  return [whiteKing, whiteBishop, whiteKnight, whitePawn, whiteQueen, whiteRook].includes(cellState);
-}
-const containsBlackPiece = (cellState: BoardCellState) => {
-  // TODO: More optimal to bitwise AND with 0x30
-  return [blackKing, blackBishop, blackKnight, blackPawn, blackQueen, blackRook].includes(cellState);
+const containsPiece = (cellState: BoardCellState, isWhite: boolean) => {
+  return cellState.piece != emptyCell && cellState.isWhite === isWhite;
 }
 
-const getWhitePawnLegalMovesAt = (boardState: string, x: number, y: number) => {
+const getPawnLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
   const cellIndex = y * 8 + x;
+  const direction = isWhite ? 1: -1;
+  const startingRow = isWhite ? 6: 1; 
   let legalMoves: number[] = [];
-  if (y === 6 && boardState[cellIndex - 16] === emptyCell) {
-    legalMoves.push(cellIndex - 16)
+  if (y === startingRow && boardState[cellIndex - (16 * direction)].piece === emptyCell) {
+    legalMoves.push(cellIndex - 16 * direction);
   }
-  if (boardState[cellIndex - 8] === emptyCell) {
-    legalMoves.push(cellIndex - 8);
+
+  const cellPlusOne = cellIndex - 8 * direction;
+  if (cellPlusOne < 0 || cellPlusOne >= 64) {
+    return legalMoves;
   }
-  if (x > 0 && containsBlackPiece(boardState[cellIndex - 8 + 1] as BoardCellState)) {
-    legalMoves.push(cellIndex - 8 + 1);
+  if (boardState[cellPlusOne].piece === emptyCell) {
+    legalMoves.push(cellPlusOne);
   }
-  if (x > 0 && containsBlackPiece(boardState[cellIndex - 8 - 1] as BoardCellState)) {
-    legalMoves.push(cellIndex - 8 - 1);
+  if (x < 7 && containsPiece(boardState[cellPlusOne + 1], !isWhite)) {
+    legalMoves.push(cellPlusOne + 1);
+  }
+  if (x > 0 && containsPiece(boardState[cellPlusOne - 1], !isWhite)) {
+    legalMoves.push(cellPlusOne - 1);
   }
   // TODO: en-passant
   return legalMoves;
 }
 
-const getWhiteBishopLegalMovesAt = (boardState: string, x: number, y: number) => {
+const getBishopLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
   let legalMoves: number[] = [];
   
   const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
@@ -51,9 +56,9 @@ const getWhiteBishopLegalMovesAt = (boardState: string, x: number, y: number) =>
     let currentX = x + dirX, currentY = y + dirY;
 
     while(currentX >= 0 && currentX < 8 && currentY >= 0 && currentY < 8 
-      && !containsWhitePiece(boardState[currentY * 8 + currentX] as BoardCellState)) {
+      && !containsPiece(boardState[currentY * 8 + currentX], isWhite)) {
         legalMoves.push(currentY * 8 + currentX);
-        if (containsBlackPiece(boardState[currentY * 8 + currentX] as BoardCellState)) {
+        if (containsPiece(boardState[currentY * 8 + currentX], !isWhite)) {
           break;
         }
       currentX += dirX;
@@ -63,36 +68,25 @@ const getWhiteBishopLegalMovesAt = (boardState: string, x: number, y: number) =>
   return legalMoves;
 }
 
-const getWhiteLegalMovesAt = (boardState: string, cellState: GamePiece, x: number, y: number) => {
-  if (cellState == whitePawn) {
-    return getWhitePawnLegalMovesAt(boardState, x, y);
+const getLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+  if (boardState[y * 8 + x].isWhite !== isWhite) {
+    return [];
   }
-  if (cellState == whiteBishop) {
-    return getWhiteBishopLegalMovesAt(boardState, x, y);
+  const cellState = boardState[y * 8 + x].piece;
+  if (cellState === emptyCell) {
+    return [];
+  }
+  if (cellState === pawn) {
+    return getPawnLegalMovesAt(boardState, x, y, isWhite);
+  }
+  if (cellState == bishop) {
+    return getBishopLegalMovesAt(boardState, x, y, isWhite);
   }
   return [];
 }
 
-const getBlackLegalMovesAt = (boardState: string, cellState: GamePiece, x: number, y: number) => {
-  const cellIndex = y * 8 + x;
-  let legalMoves: number[] = [];
-  return legalMoves;
-}
-
-const getLegalMovesAt = (boardState: string, playerTurn: PlayerTurn ,x: number, y: number) => {
-  const cellState = boardState[y * 8 + x] as BoardCellState;
-  if (cellState === emptyCell) {
-    return [];
-  }
-  if (playerTurn === playerTurnWhite) {
-    return getWhiteLegalMovesAt(boardState, cellState, x, y);
-  } else {
-    return getBlackLegalMovesAt(boardState, cellState, x, y);
-  }
-}
-
 function App() {
-  const [playerTurn, setPlayerTurn] = useState<PlayerTurn>(0);
+  const [isWhiteTurn, setIsWhiteTurn] = useState<boolean>(true);
   const [boardState, setBoardState] = useState(initialBoardState);
 
   const legalMoves: Array<number[]> = Array(64).fill(0).map(() => []);
@@ -100,18 +94,22 @@ function App() {
   for (let x = 0; x < 8; x++) {
     for (let y = 0; y < 8; y++) {
       const cellIndex = y * 8 + x;
-      legalMoves[cellIndex] = getLegalMovesAt(boardState, playerTurn, x, y);
+      legalMoves[cellIndex] = getLegalMovesAt(boardState, x, y, isWhiteTurn);
     }
   }
 
   const performMove = (action: GameAction) => {
-    let newBoardState = boardState.slice(0, action.to) + action.piece + boardState.slice(action.to + 1, 64);
-    newBoardState = newBoardState.slice(0, action.from) + emptyCell + newBoardState.slice(action.from + 1, 64);
+    const newBoardState = JSON.parse(JSON.stringify(boardState)) as BoardCellState[];
+    console.log(action.piece);
+    newBoardState[action.to].piece = newBoardState[action.from].piece;
+    newBoardState[action.to].isWhite = newBoardState[action.from].isWhite;
+    newBoardState[action.from].piece = emptyCell;
     setBoardState(newBoardState);
+    setIsWhiteTurn(!isWhiteTurn);
   };
   
   return <div className="app-container">
-    <Board boardState={boardState} playerTurn={playerTurn} legalMoves={legalMoves} performMove={performMove}/>
+    <Board boardState={boardState} isWhite={isWhiteTurn} legalMoves={legalMoves} performMove={performMove}/>
   </div>;
 }
 

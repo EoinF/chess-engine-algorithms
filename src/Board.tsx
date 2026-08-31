@@ -75,7 +75,7 @@ const BoardCell = ({cellState, onClick, isSelected, isHighlighted}: BoardCellPro
             <div className={boardCellClasses}/>
         </div>
     }
-    return <div className="board-cell" onClick={onClick}>
+    return <div className="board-cell board-cell-piece" onClick={onClick}>
         <div className={boardCellClasses}/>
         <div draggable className="draggable-piece">
             <CellStateComponent />

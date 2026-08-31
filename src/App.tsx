@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { Board } from './Board';
-import { bishop, emptyCell, pawn, type BoardCellState, type EmptyCell, type GameAction, type GamePiece } from './state';
+import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type EmptyCell, type GameAction, type GamePiece } from './state';
 
 const initialBoardState: BoardCellState[] = [
   "RNBQKBNR",
@@ -47,10 +47,8 @@ const getPawnLegalMovesAt = (boardState: BoardCellState[], x: number, y: number,
   return legalMoves;
 }
 
-const getBishopLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+const getDirectionalLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean, directions: Array<number[]>) => {
   let legalMoves: number[] = [];
-  
-  const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 
   directions.forEach(([dirX, dirY]) => {
     let currentX = x + dirX, currentY = y + dirY;
@@ -68,21 +66,74 @@ const getBishopLegalMovesAt = (boardState: BoardCellState[], x: number, y: numbe
   return legalMoves;
 }
 
-const getLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+const getSingleDirectionalLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean, directions: Array<number[]>) => {
+  let legalMoves: number[] = [];
+
+  directions.forEach(([dirX, dirY]) => {
+    let currentX = x + dirX, currentY = y + dirY;
+
+    if (currentX >= 0 && currentX < 8 && currentY >= 0 && currentY < 8
+      && !containsPiece(boardState[currentY * 8 + currentX], isWhite)) {
+        legalMoves.push(currentY * 8 + currentX);
+    }
+  });
+  return legalMoves;
+}
+
+const knightMovePatterns = [
+  [-2, 1], [2, 1], [-2, -1], [2, -1],
+  [-1, 2], [1, 2], [-1, -2], [1, -2],
+];
+
+const getKnightLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+  return knightMovePatterns
+    .filter(([dx, dy]) => x + dx >= 0 && x + dx < 8 && y + dy >= 0 && y + dy < 8)
+    .map(([dx, dy]) => (x + dx) + (y + dy) * 8)
+    .filter(newCellIndex => boardState[newCellIndex].piece === emptyCell || containsPiece(boardState[newCellIndex], !isWhite));
+}
+
+const bishopDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+const rookDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+const queenDirections = [...bishopDirections, ...rookDirections];
+const kingDirections = queenDirections;
+
+const getBishopLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+  return getDirectionalLegalMovesAt(boardState, x, y, isWhite, bishopDirections);
+}
+
+const getRookLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+  return getDirectionalLegalMovesAt(boardState, x, y, isWhite, rookDirections);
+}
+
+const getQueenLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+  return getDirectionalLegalMovesAt(boardState, x, y, isWhite, queenDirections);
+}
+
+const getKingLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean) => {
+  return getSingleDirectionalLegalMovesAt(boardState, x, y, isWhite, kingDirections);
+}
+
+const getLegalMovesAt = (boardState: BoardCellState[], x: number, y: number, isWhite: boolean): number[] => {
   if (boardState[y * 8 + x].isWhite !== isWhite) {
     return [];
   }
   const cellState = boardState[y * 8 + x].piece;
-  if (cellState === emptyCell) {
+  switch (cellState) {
+    case emptyCell: 
     return [];
-  }
-  if (cellState === pawn) {
+  case pawn:
     return getPawnLegalMovesAt(boardState, x, y, isWhite);
-  }
-  if (cellState == bishop) {
+  case bishop:
     return getBishopLegalMovesAt(boardState, x, y, isWhite);
+  case knight:
+    return getKnightLegalMovesAt(boardState, x, y, isWhite);
+  case rook:
+    return getRookLegalMovesAt(boardState, x, y, isWhite);
+  case queen:
+    return getQueenLegalMovesAt(boardState, x, y, isWhite);
+  case king:
+    return getKingLegalMovesAt(boardState, x, y, isWhite);
   }
-  return [];
 }
 
 function App() {

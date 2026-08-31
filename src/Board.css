@@ -17,6 +17,10 @@
     border: 1px solid black;
 }
 
+.board-cell-piece {
+    cursor: pointer;
+}
+
 .cell-overlay {
     position: absolute;
     width: 100%;

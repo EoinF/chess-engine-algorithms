@@ -1,19 +1,19 @@
 import './Board.css';
 
-import BlackKing from "./assets/pieces/Chess_kdt45.svg?react";
-import BlackQueen from "./assets/pieces/Chess_qdt45.svg?react";
-import BlackRook from "./assets/pieces/Chess_rdt45.svg?react";
-import BlackBishop from "./assets/pieces/Chess_bdt45.svg?react";
-import BlackKnight from "./assets/pieces/Chess_ndt45.svg?react";
-import BlackPawn from "./assets/pieces/Chess_pdt45.svg?react";
-import WhiteKing from "./assets/pieces/Chess_klt45.svg?react";
-import WhiteQueen from "./assets/pieces/Chess_qlt45.svg?react";
-import WhiteRook from "./assets/pieces/Chess_rlt45.svg?react";
-import WhiteBishop from "./assets/pieces/Chess_blt45.svg?react";
-import WhiteKnight from "./assets/pieces/Chess_nlt45.svg?react";
-import WhitePawn from "./assets/pieces/Chess_plt45.svg?react";
-import { bishop, king, knight, pawn, queen, rook, emptyCell, type BoardCellState, type GameAction, type PlayerTurn } from './state';
 import { useState } from 'react';
+import BlackBishop from "./assets/pieces/Chess_bdt45.svg?react";
+import WhiteBishop from "./assets/pieces/Chess_blt45.svg?react";
+import BlackKing from "./assets/pieces/Chess_kdt45.svg?react";
+import WhiteKing from "./assets/pieces/Chess_klt45.svg?react";
+import BlackKnight from "./assets/pieces/Chess_ndt45.svg?react";
+import WhiteKnight from "./assets/pieces/Chess_nlt45.svg?react";
+import BlackPawn from "./assets/pieces/Chess_pdt45.svg?react";
+import WhitePawn from "./assets/pieces/Chess_plt45.svg?react";
+import BlackQueen from "./assets/pieces/Chess_qdt45.svg?react";
+import WhiteQueen from "./assets/pieces/Chess_qlt45.svg?react";
+import BlackRook from "./assets/pieces/Chess_rdt45.svg?react";
+import WhiteRook from "./assets/pieces/Chess_rlt45.svg?react";
+import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type BoardState, type GameAction } from './state';
 
 
 const GetCellStateComponent = (cellState: BoardCellState) => {
@@ -86,15 +86,14 @@ const BoardCell = ({cellState, onClick, isSelected, isHighlighted}: BoardCellPro
 const boardRows = Array(8).fill(0).map((_, i) => i);
 
 type BoardProps = {
-    boardState: BoardCellState[];
-    isWhite: boolean;
+    boardState: BoardState;
     legalMoves: Array<number[]>;
     performMove: (move: GameAction) => void;
 }
 
-export const Board = ({boardState, isWhite, legalMoves, performMove}: BoardProps) => {
+export const Board = ({boardState, legalMoves, performMove}: BoardProps) => {
     const [selectedCell, setSelectedCell] = useState(-1);
-    if (boardState.length != 8 * 8) {
+    if (boardState.cells.length != 8 * 8) {
         return "Invalid board size";
     }
 
@@ -109,7 +108,7 @@ export const Board = ({boardState, isWhite, legalMoves, performMove}: BoardProps
                     const isSelected = selectedCell === cellIndex;
                     return <BoardCell 
                         key={columnIndex} 
-                        cellState={boardState[cellIndex]}
+                        cellState={boardState.cells[cellIndex]}
                         isSelected={isSelected}
                         isHighlighted={isLegalMove}
                         onClick={() => {
@@ -117,8 +116,8 @@ export const Board = ({boardState, isWhite, legalMoves, performMove}: BoardProps
                                 setSelectedCell(-1);
                                 return;
                             }
-                            if (isLegalMove && boardState[selectedCell].piece != emptyCell) {
-                                performMove({from: selectedCell, to: cellIndex, piece: boardState[selectedCell].piece})
+                            if (isLegalMove && boardState.cells[selectedCell].piece != emptyCell) {
+                                performMove({from: selectedCell, to: cellIndex, piece: boardState.cells[selectedCell].piece})
                                 return;
                             }
                             setSelectedCell(rowIndex * 8 + columnIndex);

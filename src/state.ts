@@ -17,10 +17,17 @@ export const emptyCell = "O";
 export type EmptyCell = typeof emptyCell
 
 export type BoardCellState = {
-    piece: GamePiece | EmptyCell;
-    isWhite: boolean;
+    piece: Readonly<GamePiece | EmptyCell>;
+    isWhite: Readonly<boolean>;
 }
 
+export type BoardState = Readonly<
+{
+  cells: Readonly<BoardCellState>[];
+  whiteKingIndex: number;
+  blackKingIndex: number;
+  isWhiteTurn: boolean;
+}>
 
 export const playerTurnWhite = 0;
 export const playerTurnBlack = 1;

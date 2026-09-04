@@ -92,7 +92,81 @@ const getKingLegalMovesAt = (boardState: BoardState, x: number, y: number) => {
 }
 
 const isInCheck = (boardState: BoardState) => {
-    return false;
+    const kingCellIndex = boardState.isWhiteTurn ? boardState.blackKingIndex: boardState.whiteKingIndex;
+    const kingX = kingCellIndex % 8;
+    const kingY = Math.floor(kingCellIndex / 8);
+    if (knightMovePatterns.some(([xDir, yDir]) => {
+        const x = kingX + xDir;
+        const y = kingY + yDir;
+        return x >= 0 && x < 8 && y >= 0 && y < 8 &&
+            boardState.cells[x + y * 8].piece === knight &&
+            boardState.cells[x + y * 8].isWhite === boardState.isWhiteTurn;
+    })) {
+        return true;
+    }
+    if (bishopDirections.some(([xDir, yDir]) => {
+        let x = kingX + xDir;
+        let y = kingY + yDir;
+        
+        while(x >= 0 && x < 8 && y >= 0 && y < 8) {
+            if (boardState.cells[x + y * 8].piece === bishop || boardState.cells[x + y * 8].piece === queen) {
+                return boardState.cells[x + y * 8].isWhite === boardState.isWhiteTurn;
+            }
+            if (boardState.cells[x + y * 8].piece !== emptyCell) {
+                return false;
+            }
+            x += xDir;
+            y += yDir;
+        }
+        return false;
+    })) {
+        return true;
+    }
+    
+    if (rookDirections.some(([xDir, yDir]) => {
+        let x = kingX + xDir;
+        let y = kingY + yDir;
+        
+        while(x >= 0 && x < 8 && y >= 0 && y < 8) {
+            if (boardState.cells[x + y * 8].piece === rook || boardState.cells[x + y * 8].piece === queen) {
+                return boardState.cells[x + y * 8].isWhite === boardState.isWhiteTurn;
+            }
+            if (boardState.cells[x + y * 8].piece !== emptyCell) {
+                return false;
+            }
+            x += xDir;
+            y += yDir;
+        }
+        return false;
+    })) {
+        return true;
+    }
+
+    if (!boardState.isWhiteTurn) {
+        if (kingY === 0) {
+            return false;
+        }
+        const cellIndex = (kingX - 1) + (kingY - 1) * 8;
+        if (kingX > 0 && boardState.cells[cellIndex].piece === pawn && boardState.cells[cellIndex].isWhite === boardState.isWhiteTurn) {
+            return true;
+        }
+        const cellIndex2 = (kingX + 1) + (kingY - 1) * 8;
+        if (kingX < 7 && boardState.cells[cellIndex2].piece === pawn && boardState.cells[cellIndex2].isWhite === boardState.isWhiteTurn) {
+            return true;
+        }
+    } else {
+        if (kingY === 7) {
+            return false;
+        }
+        const cellIndex = (kingX - 1) + (kingY + 1) * 8;
+        if (kingX > 0 && boardState.cells[cellIndex].piece === pawn && boardState.cells[cellIndex].isWhite === boardState.isWhiteTurn) {
+            return true;
+        }
+        const cellIndex2 = (kingX + 1) + (kingY + 1) * 8;
+        if (kingX < 7 && boardState.cells[cellIndex2].piece === pawn && boardState.cells[cellIndex2].isWhite === boardState.isWhiteTurn) {
+            return true;
+        }
+    }
 }
 
 const getProvisionalLegalMovesAt = (boardState: BoardState, x: number, y: number): number[] => {

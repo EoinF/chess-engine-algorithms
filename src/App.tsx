@@ -2,8 +2,8 @@ import { useState } from 'react';
 import './App.css';
 import { Board } from './Board';
 import { applyMove } from './gameLogic';
-import { getLegalMovesAt } from './legalMoves';
 import { king, type BoardCellState, type BoardState, type EmptyCell, type GameAction, type GamePiece } from './state';
+import { getLegalMovesAt } from './legalMoves';
 
 const initialBoardCells: BoardCellState[] = [
   "RNBQKBNR",

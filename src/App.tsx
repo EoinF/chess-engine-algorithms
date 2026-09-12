@@ -4,6 +4,8 @@ import { Board } from './Board';
 import { applyMove } from './gameLogic';
 import { king, type BoardCellState, type BoardState, type EmptyCell, type GameAction, type GamePiece } from './state';
 import { getLegalMovesAt } from './legalMoves';
+import { useEval } from './eval';
+import { Sidebar } from './Sidebar';
 
 const initialBoardCells: BoardCellState[] = [
   "RNBQKBNR",
@@ -48,6 +50,8 @@ function App() {
     return legalMovesBuilder;
   }, [boardState]);
 
+  const evalScore = useEval(boardState, legalMoves);
+
   const performMove = (action: GameAction) => {
     console.log(action.piece);
     console.log(action.from, "->", action.to);
@@ -57,6 +61,7 @@ function App() {
   
   return <div className="app-container">
     <Board boardState={boardState} legalMoves={legalMoves} performMove={performMove}/>
+    <Sidebar evalScore={evalScore}/>
   </div>;
 }
 

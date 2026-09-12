@@ -107,7 +107,7 @@ export const Board = ({boardState, legalMoves, performMove}: BoardProps) => {
                     const isLegalMove = legalDestinations.includes(cellIndex);
                     const isSelected = selectedCell === cellIndex;
                     return <BoardCell 
-                        key={columnIndex} 
+                        key={columnIndex}
                         cellState={boardState.cells[cellIndex]}
                         isSelected={isSelected}
                         isHighlighted={isLegalMove}

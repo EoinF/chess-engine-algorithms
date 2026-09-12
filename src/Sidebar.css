@@ -1,0 +1,35 @@
+.sidebar {
+    width: 128px;
+    height: 100%;
+    border: 1px solid grey;
+}
+
+.eval {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 22px;
+    color: white;
+    display: flex;
+    position: relative;
+    width: 100%;
+    justify-content: center;
+}
+
+.eval-bars {
+    mix-blend-mode: difference;
+    position: absolute;
+    display: flex;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.eval-white {
+    background: white;
+    transition: all 0.5s;
+}
+
+.eval-black {
+    background: black;
+    transition: all 0.5s;
+}

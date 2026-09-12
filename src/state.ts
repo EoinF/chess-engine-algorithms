@@ -27,6 +27,13 @@ export type BoardState = Readonly<
   whiteKingIndex: number;
   blackKingIndex: number;
   isWhiteTurn: boolean;
+  enPassantPawnIndex: number | null;
+  rookA1Moved: boolean;
+  rookA8Moved: boolean;
+  rookH1Moved: boolean;
+  rookH8Moved: boolean;
+  blackKingMoved: boolean;
+  whiteKingMoved: boolean;
 }>
 
 export const playerTurnWhite = 0;

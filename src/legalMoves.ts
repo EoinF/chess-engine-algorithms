@@ -1,5 +1,5 @@
 
-import { applyMove } from './gameLogic';
+import { applyMove, rookA1InitialCell, rookA8InitialCell, rookH1InitialCell, rookH8InitialCell } from './gameLogic';
 import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type BoardState } from './state';
 
 const containsPiece = (cellState: BoardCellState, isWhite: boolean) => {
@@ -22,13 +22,18 @@ const getPawnLegalMovesAt = (boardState: BoardState, x: number, y: number) => {
   if (boardState.cells[cellPlusOne].piece === emptyCell) {
     legalMoves.push(cellPlusOne);
   }
-  if (x < 7 && containsPiece(boardState.cells[cellPlusOne + 1], !boardState.isWhiteTurn)) {
-    legalMoves.push(cellPlusOne + 1);
+  if (x < 7) {
+    if (containsPiece(boardState.cells[cellPlusOne + 1], !boardState.isWhiteTurn)
+         || boardState.enPassantPawnIndex === cellPlusOne + 1) {
+        legalMoves.push(cellPlusOne + 1);
+    }
   }
-  if (x > 0 && containsPiece(boardState.cells[cellPlusOne - 1], !boardState.isWhiteTurn)) {
-    legalMoves.push(cellPlusOne - 1);
+  if (x > 0) {
+    if (containsPiece(boardState.cells[cellPlusOne - 1], !boardState.isWhiteTurn)
+         || boardState.enPassantPawnIndex === cellPlusOne - 1) {
+        legalMoves.push(cellPlusOne - 1);
+    }
   }
-  // TODO: en-passant
   return legalMoves;
 }
 
@@ -88,7 +93,35 @@ const getQueenLegalMovesAt = (boardState: BoardState, x: number, y: number) => {
   return getDirectionalLegalMovesAt(boardState, x, y, queenDirections);
 }
 const getKingLegalMovesAt = (boardState: BoardState, x: number, y: number) => {
-  return getSingleDirectionalLegalMovesAt(boardState, x, y, kingDirections);
+    const castlingMoves: number[] = [];
+    if (boardState.isWhiteTurn && !boardState.whiteKingMoved) {
+        if (!boardState.rookA1Moved
+            && boardState.cells[rookA1InitialCell + 1].piece === emptyCell
+            && boardState.cells[rookA1InitialCell + 2].piece === emptyCell
+            && boardState.cells[rookA1InitialCell + 3].piece === emptyCell) {
+            castlingMoves.push(rookA1InitialCell + 2);
+        }
+        if (!boardState.rookH1Moved 
+            && boardState.cells[rookH1InitialCell - 1].piece === emptyCell
+            && boardState.cells[rookH1InitialCell - 2].piece === emptyCell) {
+            castlingMoves.push(rookH1InitialCell - 1);
+        }
+    }
+    if (!boardState.isWhiteTurn && !boardState.blackKingMoved) {
+        if (!boardState.rookA8Moved
+            && boardState.cells[rookA8InitialCell + 1].piece === emptyCell
+            && boardState.cells[rookA8InitialCell + 2].piece === emptyCell
+            && boardState.cells[rookA8InitialCell + 3].piece === emptyCell) {
+            castlingMoves.push(rookA8InitialCell + 2);
+        }
+        if (!boardState.rookH8Moved
+            && boardState.cells[rookH8InitialCell - 1].piece === emptyCell
+            && boardState.cells[rookH8InitialCell - 2].piece === emptyCell) {
+            castlingMoves.push(rookH8InitialCell - 1);
+        }
+    }
+
+  return [...castlingMoves, ...getSingleDirectionalLegalMovesAt(boardState, x, y, kingDirections)];
 }
 
 const isInCheck = (boardState: BoardState) => {
@@ -188,6 +221,7 @@ const getProvisionalLegalMovesAt = (boardState: BoardState, x: number, y: number
     return getKingLegalMovesAt(boardState, x, y);
   }
 }
+
 export const getLegalMovesAt = (boardState: BoardState, x: number, y: number): number[] => {
   if (boardState.cells[y * 8 + x].isWhite !== boardState.isWhiteTurn) {
     return [];

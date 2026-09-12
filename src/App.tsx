@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import './App.css';
 import { Board } from './Board';
 import { applyMove } from './gameLogic';
@@ -24,24 +24,35 @@ const initialBoardState: BoardState = {
   blackKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && !cell.isWhite),
   whiteKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && cell.isWhite),
   isWhiteTurn: true,
+  enPassantPawnIndex: null,
+  blackKingMoved: false,
+  whiteKingMoved: false,
+  rookA1Moved: false,
+  rookA8Moved: false,
+  rookH1Moved: false,
+  rookH8Moved: false,
 }
 
 
 function App() {
   const [boardState, setBoardState] = useState(initialBoardState);
 
-  const legalMoves: Array<number[]> = Array(64).fill(0).map(() => []);
-
-  for (let x = 0; x < 8; x++) {
-    for (let y = 0; y < 8; y++) {
-      const cellIndex = y * 8 + x;
-      legalMoves[cellIndex] = getLegalMovesAt(boardState, x, y);
+  const legalMoves = useMemo(() => {
+    const legalMovesBuilder: Array<number[]> = Array(64).fill(0).map(() => []);
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        const cellIndex = y * 8 + x;
+        legalMovesBuilder[cellIndex] = getLegalMovesAt(boardState, x, y);
+      }
     }
-  }
+    return legalMovesBuilder;
+  }, [boardState]);
 
   const performMove = (action: GameAction) => {
     console.log(action.piece);
-    setBoardState(applyMove(boardState, action.from, action.to));
+    console.log(action.from, "->", action.to);
+    const newBoardState = applyMove(boardState, action.from, action.to);
+    setBoardState(newBoardState);
   };
   
   return <div className="app-container">

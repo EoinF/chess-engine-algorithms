@@ -25,7 +25,6 @@ export const applyMove = (boardState: BoardState, from: number, to: number): Boa
 
     // Castling
     if (cellDifference === 2 && newCells[to].piece === king) {
-        console.log(from, to, castleMappings, newCells[from], newCells[to])
         const [rookFrom, rookTo] = castleMappings[to];
         newCells[rookTo] = {...newCells[rookTo]};
         newCells[rookFrom] = {piece: emptyCell, isWhite: false};

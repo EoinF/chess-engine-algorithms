@@ -14,6 +14,7 @@ import WhiteQueen from "./assets/pieces/Chess_qlt45.svg?react";
 import BlackRook from "./assets/pieces/Chess_rdt45.svg?react";
 import WhiteRook from "./assets/pieces/Chess_rlt45.svg?react";
 import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type BoardState, type GameAction } from './state';
+import { toFileLetter } from './utils';
 
 
 const GetCellStateComponent = (cellState: BoardCellState) => {
@@ -100,31 +101,36 @@ export const Board = ({boardState, legalMoves, performMove}: BoardProps) => {
     const legalDestinations = selectedCell >= 0 ? legalMoves[selectedCell]: [];
 
     return <div className="board">
-        {boardRows.map(rowIndex => (
-            <div key={rowIndex} className="board-row">
-                {boardRows.map(columnIndex => {
-                    const cellIndex = rowIndex * 8 + columnIndex;
-                    const isLegalMove = legalDestinations.includes(cellIndex);
-                    const isSelected = selectedCell === cellIndex;
-                    return <BoardCell 
-                        key={columnIndex}
-                        cellState={boardState.cells[cellIndex]}
-                        isSelected={isSelected}
-                        isHighlighted={isLegalMove}
-                        onClick={() => {
-                            if (isSelected) {
-                                setSelectedCell(-1);
-                                return;
-                            }
-                            if (isLegalMove && boardState.cells[selectedCell].piece != emptyCell) {
-                                performMove({from: selectedCell, to: cellIndex, piece: boardState.cells[selectedCell].piece})
-                                return;
-                            }
-                            setSelectedCell(rowIndex * 8 + columnIndex);
-                        }}
-                    />
-                })}
-            </div>)
-        )}
+        <div className="board-ranks">{boardRows.map(rowIndex => <div key={rowIndex}>{rowIndex + 1}</div>)}</div>
+        <div className="board-contents">
+            {boardRows.map(rowIndex => (
+                <div key={rowIndex} className="board-row">
+                    {boardRows.map(columnIndex => {
+                        const cellIndex = rowIndex * 8 + columnIndex;
+                        const isLegalMove = legalDestinations.includes(cellIndex);
+                        const isSelected = selectedCell === cellIndex;
+                        return <BoardCell 
+                            key={columnIndex}
+                            cellState={boardState.cells[cellIndex]}
+                            isSelected={isSelected}
+                            isHighlighted={isLegalMove}
+                            onClick={() => {
+                                if (isSelected) {
+                                    setSelectedCell(-1);
+                                    return;
+                                }
+                                if (isLegalMove && boardState.cells[selectedCell].piece != emptyCell) {
+                                    performMove({from: selectedCell, to: cellIndex, piece: boardState.cells[selectedCell].piece})
+                                    return;
+                                }
+                                setSelectedCell(rowIndex * 8 + columnIndex);
+                            }}
+                        />
+                    })}
+                </div>)
+            )}
+        </div>
+        <div></div>
+        <div className="board-files">{boardRows.map(rowIndex => <div key={rowIndex}>{toFileLetter(rowIndex)}</div>)}</div>
     </div>
 }

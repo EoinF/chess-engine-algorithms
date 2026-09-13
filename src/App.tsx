@@ -3,8 +3,8 @@ import './App.css';
 import { Board } from './Board';
 import { applyMove } from './gameLogic';
 import { king, type BoardCellState, type BoardState, type EmptyCell, type GameAction, type GamePiece } from './state';
-import { getLegalMovesAt } from './legalMoves';
-import { useEval } from './eval';
+import { getLegalMoves, getLegalMovesAt } from './legalMoves';
+import { getBoardEval, useEval } from './eval';
 import { Sidebar } from './Sidebar';
 
 const initialBoardCells: BoardCellState[] = [
@@ -39,16 +39,7 @@ const initialBoardState: BoardState = {
 function App() {
   const [boardState, setBoardState] = useState(initialBoardState);
 
-  const legalMoves = useMemo(() => {
-    const legalMovesBuilder: Array<number[]> = Array(64).fill(0).map(() => []);
-    for (let x = 0; x < 8; x++) {
-      for (let y = 0; y < 8; y++) {
-        const cellIndex = y * 8 + x;
-        legalMovesBuilder[cellIndex] = getLegalMovesAt(boardState, x, y);
-      }
-    }
-    return legalMovesBuilder;
-  }, [boardState]);
+  const legalMoves = useMemo(() => getLegalMoves(boardState), [boardState]);
 
   const evalScore = useEval(boardState, legalMoves);
 
@@ -57,6 +48,7 @@ function App() {
     console.log(action.from, "->", action.to);
     const newBoardState = applyMove(boardState, action.from, action.to);
     setBoardState(newBoardState);
+    console.log(getBoardEval(newBoardState));
   };
   
   return <div className="app-container">

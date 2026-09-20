@@ -45,3 +45,31 @@ export type GameAction = {
   from: number;
   to: number;
 }
+
+const initialBoardCells: BoardCellState[] = [
+  "RNBQKBNR",
+  "PPPPPPPP",
+  "OOOOOOOO",
+  "OOOOOOOO",
+  "OOOOOOOO",
+  "OOOOOOOO",
+  "pppppppp",
+  "rnbqkbnr"
+].join("").split("").map((cell) => ({
+  piece: cell.toUpperCase() as GamePiece | EmptyCell,
+  isWhite: cell.charCodeAt(0) >= 0x61, // cell > 'a'
+}));
+
+export const initialBoardState: Readonly<BoardState> = {
+  cells: initialBoardCells,
+  blackKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && !cell.isWhite),
+  whiteKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && cell.isWhite),
+  isWhiteTurn: true,
+  enPassantPawnIndex: null,
+  blackKingMoved: false,
+  whiteKingMoved: false,
+  rookA1Moved: false,
+  rookA8Moved: false,
+  rookH1Moved: false,
+  rookH8Moved: false,
+}

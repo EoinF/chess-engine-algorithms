@@ -11,15 +11,19 @@ type BenchmarkRun = {
     start: number;
     end: number;
     status: "complete" | "cancelled";
+    iterations: number;
 }
 
 type RunningBenchmark = {
     benchmark: Worker;
     benchmarkName: string;
     start: number;
+    iterations: number;
 }
 
 const availableBenchmarks = [
+    "getLegalMoves",
+    "applyMove",
     "test1"
 ] as const;
 
@@ -42,18 +46,28 @@ export const Benchmark = () => {
     }
     const onSubmitForm: React.SubmitEventHandler = async (e) => {
         const benchmark = workersMap[state.benchmarkName];
+        const numIterations = Number(state.iterations);
+
         e.preventDefault();
         if (runningBenchmark != null || benchmark == null) {
             return false;
         }
         const startTime = Date.now();
-        setRunningBenchmark({benchmarkName: state.benchmarkName, benchmark, start: startTime});
+        setRunningBenchmark({benchmarkName: state.benchmarkName, benchmark, start: startTime, iterations: numIterations});
         benchmark.onmessage = (() => {
             benchmark.onmessage = null;
             setRunningBenchmark(null)
-            setBenchmarkRuns(runs => ([{...state, start: startTime, end: Date.now(), status: "complete"}, ...runs]));
+            setBenchmarkRuns(runs => ([
+                {
+                    benchmarkName: state.benchmarkName, 
+                    start: startTime, 
+                    end: Date.now(), 
+                    status: "complete",
+                    iterations: numIterations,
+                }, 
+                ...runs]));
         });
-        benchmark.postMessage({iterations: Number(state.iterations)});
+        benchmark.postMessage({iterations: numIterations});
     };
 
     const onCancel = () => {
@@ -62,7 +76,14 @@ export const Benchmark = () => {
             // Reload benchmark after terminating
             workersMap[runningBenchmark.benchmarkName] = loadBenchmark(runningBenchmark.benchmarkName);
             
-            setBenchmarkRuns(runs => ([{...state, start: runningBenchmark.start, end: Date.now(), status: "cancelled"}, ...runs]));
+            setBenchmarkRuns(runs => ([
+                {
+                    benchmarkName: runningBenchmark.benchmarkName, 
+                    start: runningBenchmark.start, 
+                    end: Date.now(), 
+                    status: "cancelled",
+                    iterations: runningBenchmark.iterations,
+                }, ...runs]));
             setRunningBenchmark(null);
         }
     }
@@ -94,10 +115,13 @@ type BenchmarkRunViewProps = {
     benchmarkRun: BenchmarkRun;
 }
 
-const BenchmarkRunItem = ({benchmarkRun: {start, end, benchmarkName, status }}: BenchmarkRunViewProps) => {
+const BenchmarkRunItem = ({benchmarkRun: {start, end, benchmarkName, status, iterations }}: BenchmarkRunViewProps) => {
+    const duration = end - start;
+    const durationPerIteration = duration / iterations
     return <div className="benchmark-run-item">
-        <div>{benchmarkName}</div>
+        <div>{benchmarkName}({iterations})</div>
         <div className={status === "cancelled" ? "benchmark-cancelled": ""}>{end - start}ms</div>
+       {status === "complete" && <div>({durationPerIteration.toFixed(2)} ms)</div>}
     </div>
 }
 
@@ -105,7 +129,7 @@ type BenchmarkActiveItemProps = {
     runningBenchmark: RunningBenchmark;
     onCancel: () => void;
 };
-const BenchmarkActiveItem = ({runningBenchmark: {benchmarkName, start}, onCancel}: BenchmarkActiveItemProps) => {
+const BenchmarkActiveItem = ({runningBenchmark: {benchmarkName, start, iterations}, onCancel}: BenchmarkActiveItemProps) => {
     const [end, setEnd] = useState(Date.now());
 
     useEffect(() => {
@@ -113,7 +137,7 @@ const BenchmarkActiveItem = ({runningBenchmark: {benchmarkName, start}, onCancel
     })
 
     return <div className="benchmark-run-item">
-        <div>{benchmarkName}</div>
+        <div>{benchmarkName}({iterations})</div>
         <div className="benchmark-timer">{end - start}ms</div>
         <button className="benchmark-cancel" type="button" onClick={onCancel}>Cancel</button>
     </div>

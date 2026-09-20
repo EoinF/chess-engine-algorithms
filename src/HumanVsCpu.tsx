@@ -1,39 +1,11 @@
 import { useMemo, useState } from 'react';
 import './App.css';
 import { Board } from './Board';
-import { useEval } from './useEval';
 import { applyMove } from './gameLogic';
 import { getLegalMoves } from './legalMoves';
 import { Sidebar } from './Sidebar';
-import { king, type BoardCellState, type BoardState, type EmptyCell, type GameAction, type GamePiece } from './state';
-
-const initialBoardCells: BoardCellState[] = [
-  "RNBQKBNR",
-  "PPPPPPPP",
-  "OOOOOOOO",
-  "OOOOOOOO",
-  "OOOOOOOO",
-  "OOOOOOOO",
-  "pppppppp",
-  "rnbqkbnr"
-].join("").split("").map((cell) => ({
-  piece: cell.toUpperCase() as GamePiece | EmptyCell,
-  isWhite: cell.charCodeAt(0) >= 0x61, // cell > 'a'
-}));
-
-const initialBoardState: BoardState = {
-  cells: initialBoardCells,
-  blackKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && !cell.isWhite),
-  whiteKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && cell.isWhite),
-  isWhiteTurn: true,
-  enPassantPawnIndex: null,
-  blackKingMoved: false,
-  whiteKingMoved: false,
-  rookA1Moved: false,
-  rookA8Moved: false,
-  rookH1Moved: false,
-  rookH8Moved: false,
-}
+import { initialBoardState, type GameAction } from './state';
+import { useEval } from './useEval';
 
 export const HumanVsCpu = () => {
       const [boardState, setBoardState] = useState(initialBoardState);

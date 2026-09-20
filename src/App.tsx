@@ -15,8 +15,9 @@ type AppHeaderProps = {
 const AppHeader = ({selectedMode, setMode}: AppHeaderProps) => {
   return <header className="modes-list">
     {modes.map(modeName => 
-      <div 
+      <div
         className={modeName === selectedMode ? "selected-mode": "mode"}
+        key={modeName}
         onClick={() => setMode(modeName)}
       >{modeName}</div>
     )}

@@ -1,0 +1,43 @@
+.benchmark-form {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 32px;
+
+    border: 1px solid grey;
+}
+
+.form-field {
+    display: flex;
+    gap: 8px;
+}
+
+.submit-button {
+    height: 32px;
+    font-size: 18px;
+    line-height: 28px;
+    /* justify-content: center; */
+    /* display: flex; */
+}
+
+.benchmark-run-history {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 4px;
+    padding-top: 20px;
+}
+
+.benchmark-run-item {
+    display: flex;
+    border: 1px solid grey;
+    justify-content: space-evenly;
+    padding: 4px;
+    gap: 16px;
+}
+
+.benchmark-cancelled {
+    color: orange;
+}

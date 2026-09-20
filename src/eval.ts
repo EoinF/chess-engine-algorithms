@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardState, type EmptyCell, type GameAction, type GamePiece } from "./state"
 import { applyMove } from "./gameLogic";
 import { getLegalMoves } from "./legalMoves";
-import { cellIndexToBoardLabel, toFileLetter } from "./utils";
+import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardState, type EmptyCell, type GameAction, type GamePiece } from "./state";
+import { cellIndexToBoardLabel } from "./utils";
 
 const scoreMap: Record<GamePiece | EmptyCell, number> = {
     [emptyCell]: 0,
@@ -68,17 +67,3 @@ export function* depthLimitedMiniMaxEval(boardState: BoardState, legalMoves: num
     }
     yield evalScore;
 };
-
-export const useEval = (boardState: BoardState, legalMoves: number[][]) => {
-    const [evalScore, setEval] = useState(0);
-    const workerRef = useRef(new Worker(new URL("evalWorker.ts", import.meta.url), {type: "module"}));
-    
-    useEffect(() => {
-        workerRef.current.onmessage = (e) => {
-            setEval(e.data as number);
-        }
-        workerRef.current.postMessage({boardState, legalMoves});
-    }, [boardState]);
-
-    return evalScore;
-}

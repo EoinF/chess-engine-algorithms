@@ -1,4 +1,8 @@
 .app-container {
+  padding: 10px;
+}
+
+.app-body {
   display: grid;
   grid-template-columns: auto auto;
   align-content: center;
@@ -6,6 +10,33 @@
   height: 100%;
   align-items: center;
   justify-content: center;
+}
 
-  padding: 10px;
+.modes-list {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+}
+
+.selected-mode {
+  color: yellow;
+    background-color: rgb(71, 71, 65);
+}
+
+.mode {
+  color: rgb(179, 179, 178);
+  background-color: black;
+}
+
+.mode, .selected-mode {
+  border: 1px solid grey;
+  border-radius: 6px;
+  padding: 4px;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(101, 101, 101);
+  }
 }

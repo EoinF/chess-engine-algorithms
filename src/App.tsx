@@ -1,59 +1,37 @@
-import { useMemo, useState } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import './App.css';
-import { Board } from './Board';
-import { applyMove } from './gameLogic';
-import { king, type BoardCellState, type BoardState, type EmptyCell, type GameAction, type GamePiece } from './state';
-import { getLegalMoves, getLegalMovesAt } from './legalMoves';
-import { getBoardEval, useEval } from './eval';
-import { Sidebar } from './Sidebar';
+import { Benchmark } from './Benchmark';
+import { HumanVsCpu } from './HumanVsCpu';
 
-const initialBoardCells: BoardCellState[] = [
-  "RNBQKBNR",
-  "PPPPPPPP",
-  "OOOOOOOO",
-  "OOOOOOOO",
-  "OOOOOOOO",
-  "OOOOOOOO",
-  "pppppppp",
-  "rnbqkbnr"
-].join("").split("").map((cell) => ({
-  piece: cell.toUpperCase() as GamePiece | EmptyCell,
-  isWhite: cell.charCodeAt(0) >= 0x61, // cell > 'a'
-}));
+type AppMode = "human_vs_cpu" | "benchmark"
+const modes: AppMode[] = ["human_vs_cpu", "benchmark"]
 
-const initialBoardState: BoardState = {
-  cells: initialBoardCells,
-  blackKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && !cell.isWhite),
-  whiteKingIndex: initialBoardCells.findIndex(cell => cell.piece === king && cell.isWhite),
-  isWhiteTurn: true,
-  enPassantPawnIndex: null,
-  blackKingMoved: false,
-  whiteKingMoved: false,
-  rookA1Moved: false,
-  rookA8Moved: false,
-  rookH1Moved: false,
-  rookH8Moved: false,
+
+type AppHeaderProps = {
+  selectedMode: AppMode;
+  setMode: Dispatch<SetStateAction<AppMode>>;
 }
 
+const AppHeader = ({selectedMode, setMode}: AppHeaderProps) => {
+  return <header className="modes-list">
+    {modes.map(modeName => 
+      <div 
+        className={modeName === selectedMode ? "selected-mode": "mode"}
+        onClick={() => setMode(modeName)}
+      >{modeName}</div>
+    )}
+  </header>
+}
 
 function App() {
-  const [boardState, setBoardState] = useState(initialBoardState);
-
-  const legalMoves = useMemo(() => getLegalMoves(boardState), [boardState]);
-
-  const evalScore = useEval(boardState, legalMoves);
-
-  const performMove = (action: GameAction) => {
-    console.log(action.piece);
-    console.log(action.from, "->", action.to);
-    const newBoardState = applyMove(boardState, action.from, action.to);
-    setBoardState(newBoardState);
-    console.log(getBoardEval(newBoardState));
-  };
+  const [mode, setMode] = useState<AppMode>("benchmark");
   
   return <div className="app-container">
-    <Board boardState={boardState} legalMoves={legalMoves} performMove={performMove}/>
-    <Sidebar evalScore={evalScore}/>
+    <AppHeader selectedMode={mode} setMode={setMode}/>
+    <div className="app-body">
+      {mode === "benchmark" && <Benchmark/>}
+      {mode === "human_vs_cpu" && <HumanVsCpu/>}
+    </div>
   </div>;
 }
 

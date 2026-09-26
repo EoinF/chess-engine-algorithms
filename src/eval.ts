@@ -1,7 +1,6 @@
 import { applyMove } from "./gameLogic";
 import { getLegalMoves } from "./legalMoves";
 import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardState, type EmptyCell, type GameAction, type GamePiece } from "./state";
-import { cellIndexToBoardLabel } from "./utils";
 
 const scoreMap: Record<GamePiece | EmptyCell, number> = {
     [emptyCell]: 0,
@@ -28,7 +27,7 @@ type EvalMoveHistory = {
     moves: GameAction[];
 }
 
-function MiniMaxInstance(maxDepth: number) {
+export function MiniMaxInstance(maxDepth: number) {
     function MiniMax(boardState: BoardState, legalMoves: number[][], depth: number): EvalMoveHistory {
         if (depth === 0) {
             // console.log(depthToArrow[depth], getBoardEval(boardState), boardState)
@@ -56,14 +55,3 @@ function MiniMaxInstance(maxDepth: number) {
 
     return (boardState: BoardState, legalMoves: number[][]) => MiniMax(boardState, legalMoves, maxDepth);
 }
-
-const MiniMax = MiniMaxInstance(3);
-
-export function* depthLimitedMiniMaxEval(boardState: BoardState, legalMoves: number[][]) {
-    const {score: evalScore, moves} = MiniMax(boardState, legalMoves);
-
-    for (const move of moves) {
-        console.log(`${move.piece} ${cellIndexToBoardLabel(move.from)} -> ${cellIndexToBoardLabel(move.to)}`);
-    }
-    yield evalScore;
-};

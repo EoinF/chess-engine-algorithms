@@ -24,18 +24,28 @@
 }
 
 .benchmark-run-history {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto;
+    padding: 8px;
+    border: 1px solid grey;
     flex-flow: column nowrap;
-    gap: 4px;
     padding-top: 20px;
+    color: rgb(210, 255, 235);
+
+    > div {
+        /* border: 1px solid grey; */
+        display: flex;
+        justify-content: center;
+        padding: 2px;
+    }
 }
 
-.benchmark-run-item {
-    display: flex;
-    border: 1px solid grey;
-    justify-content: space-evenly;
-    padding: 4px;
-    gap: 16px;
+.benchmark-date {
+    color: rgb(74, 210, 206);
+}
+
+div.benchmark-name {
+    padding: 2px 12px;
 }
 
 .benchmark-cancelled {

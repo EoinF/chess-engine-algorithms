@@ -1,6 +1,6 @@
 import './Board.css';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import BlackBishop from "./assets/pieces/Chess_bdt45.svg?react";
 import WhiteBishop from "./assets/pieces/Chess_blt45.svg?react";
 import BlackKing from "./assets/pieces/Chess_kdt45.svg?react";
@@ -13,9 +13,10 @@ import BlackQueen from "./assets/pieces/Chess_qdt45.svg?react";
 import WhiteQueen from "./assets/pieces/Chess_qlt45.svg?react";
 import BlackRook from "./assets/pieces/Chess_rdt45.svg?react";
 import WhiteRook from "./assets/pieces/Chess_rlt45.svg?react";
-import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type GameAction } from './state';
-import { getBoardCell, toFileLetter } from './utils';
-import type { BoardState } from './BoardStateV1/state';
+import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type GameAction } from './chess/state';
+import { toFileLetter } from './utils';
+import type { BoardState } from './chess/BoardStateV1/state';
+import type { BoardStateManager } from './chess/boardStateManager';
 
 
 const GetCellStateComponent = (cellState: BoardCellState) => {
@@ -89,16 +90,19 @@ const boardRows = Array(8).fill(0).map((_, i) => i);
 
 type BoardProps = {
     boardState: BoardState;
-    legalMoves: Array<number[]>;
-    performMove: (move: GameAction) => void;
+    stateManager: BoardStateManager<any>;
+    performMove: (action: GameAction) => void;
 }
 
-export const Board = ({boardState, legalMoves, performMove}: BoardProps) => {
+export const Board = ({boardState, stateManager, performMove}: BoardProps) => {
     const [selectedCellIndex, setSelectedCell] = useState(-1);
     if (boardState.cells.length != 8 * 8) {
         return "Invalid board size";
     }
 
+    const legalMoves = useMemo(() => 
+        stateManager.getLegalMoves(boardState), 
+    [stateManager, boardState]);
     const legalDestinations = selectedCellIndex >= 0 ? legalMoves[selectedCellIndex]: [];
 
     return <div className="board">
@@ -110,10 +114,10 @@ export const Board = ({boardState, legalMoves, performMove}: BoardProps) => {
                         const cellIndex = rowIndex * 8 + columnIndex;
                         const isLegalMove = legalDestinations.includes(cellIndex);
                         const isSelected = selectedCellIndex === cellIndex;
-                        const selectedCell = getBoardCell(boardState, selectedCellIndex);
+                        const selectedCell = stateManager.getBoardCell(boardState, selectedCellIndex);
                         return <BoardCell 
                             key={columnIndex}
-                            cellState={getBoardCell(boardState, cellIndex)}
+                            cellState={stateManager.getBoardCell(boardState, cellIndex)}
                             isSelected={isSelected}
                             isHighlighted={isLegalMove}
                             onClick={() => {

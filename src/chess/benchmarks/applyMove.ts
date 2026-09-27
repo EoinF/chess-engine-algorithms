@@ -14,4 +14,3 @@ onmessage = (e) => {
   }
   postMessage({});
 };
-

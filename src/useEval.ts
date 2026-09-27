@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import type { BoardState } from "./BoardStateV1/state";
+import { type BoardState } from "./chess/BoardStateV1/state";
 
-export const useEval = (boardState: BoardState, legalMoves: number[][], isActive: boolean = true) => {
+export const useEval = (boardState: BoardState, isActive: boolean = true) => {
     const [evalScore, setEval] = useState(0);
     const workerRef = useRef(new Worker(new URL("evalWorker.ts", import.meta.url), {type: "module"}));
 
@@ -13,11 +13,11 @@ export const useEval = (boardState: BoardState, legalMoves: number[][], isActive
     
     useEffect(() => {
         if (isActive) {
-            workerRef.current.postMessage({boardState, legalMoves});
+            workerRef.current.postMessage({boardState});
         } else {
             workerRef.current.terminate();
         }
-    }, [boardState, legalMoves, isActive]);
+    }, [boardState, isActive]);
 
     return evalScore;
 }

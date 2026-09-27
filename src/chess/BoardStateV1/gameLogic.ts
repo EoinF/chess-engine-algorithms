@@ -51,3 +51,5 @@ export const applyMove = (boardState: BoardState, from: number, to: number): Boa
         whiteKingMoved: boardState.whiteKingMoved || from === whiteKingInitialCell,
     }
 }
+
+export const isWhiteTurn = (boardState: BoardState) => boardState.isWhiteTurn;

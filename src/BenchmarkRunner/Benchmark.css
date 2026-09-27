@@ -51,3 +51,9 @@ div.benchmark-name {
 .benchmark-cancelled {
     color: orange;
 }
+
+.delete-run {
+    cursor: pointer;
+    padding: 0 8px;
+    color: red;
+}

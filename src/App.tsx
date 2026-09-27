@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import './App.css';
-import { Benchmark } from './Benchmark';
+import { BenchmarkRunner } from './BenchmarkRunner/BenchmarkRunner';
 import { HumanVsCpu } from './HumanVsCpu';
 
 type AppMode = "human_vs_cpu" | "benchmark"
@@ -30,7 +30,7 @@ function App() {
   return <div className="app-container">
     <AppHeader selectedMode={mode} setMode={setMode}/>
     <div className="app-body">
-      {mode === "benchmark" && <Benchmark/>}
+      {mode === "benchmark" && <BenchmarkRunner/>}
       {mode === "human_vs_cpu" && <HumanVsCpu/>}
     </div>
   </div>;

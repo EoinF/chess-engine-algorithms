@@ -53,3 +53,4 @@ export const applyMove = (boardState: BoardState, from: number, to: number): Boa
 }
 
 export const isWhiteTurn = (boardState: BoardState) => boardState.isWhiteTurn;
+export const getBoardCell = (boardState: BoardState, cellIndex: number) => boardState.cells[cellIndex];

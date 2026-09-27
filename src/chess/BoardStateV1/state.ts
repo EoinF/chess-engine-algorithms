@@ -1,8 +1,7 @@
 import type { BoardStateManager } from "../boardStateManager";
 import { getBoardEval } from "./eval";
 import { king, type BoardCellState, type EmptyCell, type GamePiece } from "../state";
-import { getBoardCell } from "../../utils";
-import { applyMove, isWhiteTurn } from "./gameLogic";
+import { applyMove, getBoardCell, isWhiteTurn } from "./gameLogic";
 import { getLegalMoves } from "./legalMoves";
 
 export type BoardState = Readonly<

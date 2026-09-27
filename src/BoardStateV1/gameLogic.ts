@@ -1,4 +1,5 @@
-import { emptyCell, king, pawn, type BoardCellState, type BoardState } from "./state";
+import { emptyCell, king, pawn, type BoardCellState } from "../state";
+import type { BoardState } from "./state";
 
 const blackKingInitialCell = (8 * 7) + 4;
 const whiteKingInitialCell = 4;

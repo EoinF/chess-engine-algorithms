@@ -1,6 +1,7 @@
 
 import { applyMove, rookA1InitialCell, rookA8InitialCell, rookH1InitialCell, rookH8InitialCell } from './gameLogic';
-import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState, type BoardState } from './state';
+import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardCellState } from '../state';
+import type { BoardState } from './state';
 
 const containsPiece = (cellState: BoardCellState, isWhite: boolean) => {
   return cellState.piece != emptyCell && cellState.isWhite === isWhite;

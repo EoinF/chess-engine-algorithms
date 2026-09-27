@@ -1,6 +1,8 @@
-import { applyMove } from "./gameLogic";
-import { getLegalMoves } from "./legalMoves";
-import { bishop, emptyCell, king, knight, pawn, queen, rook, type BoardState, type EmptyCell, type GameAction, type GamePiece } from "./state";
+import { applyMove } from "./BoardStateV1/gameLogic";
+import { getLegalMoves } from "./BoardStateV1/legalMoves";
+import type { BoardState } from "./BoardStateV1/state";
+import { bishop, emptyCell, king, knight, pawn, queen, rook, type EmptyCell, type GameAction, type GamePiece } from "./state";
+import { getBoardCell } from "./utils";
 
 const scoreMap: Record<GamePiece | EmptyCell, number> = {
     [emptyCell]: 0,
@@ -39,6 +41,7 @@ export function MiniMaxInstance(maxDepth: number) {
 
         for (let from = 0; from < legalMoves.length; from++) {
             for (const to of legalMoves[from]) {
+                const boardCell = getBoardCell(boardState, from);
                 const newBoardState = applyMove(boardState, from, to);
                 const newLegalMoves = getLegalMoves(newBoardState);
                 const {score, moves} = MiniMax(newBoardState, newLegalMoves, depth - 1);
@@ -46,7 +49,7 @@ export function MiniMaxInstance(maxDepth: number) {
                 
                 if (bestScore === score) {
                     bestMoves = moves;
-                    bestMoves[maxDepth - depth] = { piece: boardState.cells[from].piece as GamePiece, from, to};
+                    bestMoves[maxDepth - depth] = { piece: boardCell.piece as GamePiece, from, to};
                 }
             }
         }

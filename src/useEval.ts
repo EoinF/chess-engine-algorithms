@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { BoardState } from "./state";
+import type { BoardState } from "./BoardStateV1/state";
 
 export const useEval = (boardState: BoardState, legalMoves: number[][], isActive: boolean = true) => {
     const [evalScore, setEval] = useState(0);

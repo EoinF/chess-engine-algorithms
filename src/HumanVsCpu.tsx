@@ -1,16 +1,16 @@
 import { useMemo, useState } from 'react';
 import './App.css';
 import { Board } from './Board';
-import { applyMove } from './gameLogic';
-import { getLegalMoves } from './legalMoves';
+import { applyMove } from './BoardStateV1/gameLogic';
+import { getLegalMoves } from './BoardStateV1/legalMoves';
 import { Sidebar } from './Sidebar';
-import { initialBoardState, type GameAction } from './state';
+import { type GameAction } from './state';
 import { useEval } from './useEval';
+import { initialBoardState } from './BoardStateV1/state';
 
 export const HumanVsCpu = () => {
-      const [boardState, setBoardState] = useState(initialBoardState);
+  const [boardState, setBoardState] = useState(initialBoardState);
   const legalMoves = useMemo(() => getLegalMoves(boardState), [boardState]);
-
 
   const evalScore = useEval(boardState, legalMoves);
 
@@ -21,8 +21,8 @@ export const HumanVsCpu = () => {
     setBoardState(newBoardState);
     // console.log(getBoardEval(newBoardState));
   };
-    return <>
-        <Board boardState={boardState} legalMoves={legalMoves} performMove={performMove}/>
-        <Sidebar evalScore={evalScore}/>
-    </>;
+  return <>
+      <Board boardState={boardState} legalMoves={legalMoves} performMove={performMove}/>
+      <Sidebar evalScore={evalScore}/>
+  </>;
 }

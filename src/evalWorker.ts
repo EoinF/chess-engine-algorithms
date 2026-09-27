@@ -1,5 +1,5 @@
 import { MiniMaxInstance } from "./eval";
-import type { BoardState } from "./state";
+import type { BoardState } from "./BoardStateV1/state";
 import { cellIndexToBoardLabel } from "./utils";
 
 const evalFunction = depthLimitedMiniMaxEval;

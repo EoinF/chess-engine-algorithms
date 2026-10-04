@@ -47,10 +47,13 @@ export const initialBoardState: Readonly<BoardState> = {
   rookH8Moved: false,
 }
 
+const getInitialState = () => initialBoardState;
+
 export const boardStateV1Manager: BoardStateManager<BoardState> = {
     applyMove,
     getBoardCell,
     getLegalMoves,
     getBoardEval,
-    isWhiteTurn
+    isWhiteTurn,
+    getInitialState
 }

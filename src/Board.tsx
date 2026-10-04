@@ -86,7 +86,8 @@ const BoardCell = ({cellState, onClick, isSelected, isHighlighted}: BoardCellPro
     </div>
 }
 
-const boardRows = Array(8).fill(0).map((_, i) => i);
+const boardColumns = Array(8).fill(0).map((_, i) => i);
+const boardRows = boardColumns.toReversed();
 
 type BoardProps = {
     boardState: BoardState;
@@ -111,7 +112,7 @@ export const Board = ({boardState, stateManager, performMove}: BoardProps) => {
             {boardRows.map(rowIndex => (
                 <div key={rowIndex} className="board-row">
                     {boardRows.map(columnIndex => {
-                        const cellIndex = rowIndex * 8 + columnIndex;
+                        const cellIndex = (7 - rowIndex) * 8 + columnIndex;
                         const isLegalMove = legalDestinations.includes(cellIndex);
                         const isSelected = selectedCellIndex === cellIndex;
                         const selectedCell = stateManager.getBoardCell(boardState, selectedCellIndex);
@@ -129,7 +130,7 @@ export const Board = ({boardState, stateManager, performMove}: BoardProps) => {
                                     performMove({from: selectedCellIndex, to: cellIndex, piece: selectedCell.piece})
                                     return;
                                 }
-                                setSelectedCell(rowIndex * 8 + columnIndex);
+                                setSelectedCell(cellIndex);
                             }}
                         />
                     })}
@@ -137,6 +138,6 @@ export const Board = ({boardState, stateManager, performMove}: BoardProps) => {
             )}
         </div>
         <div></div>
-        <div className="board-files">{boardRows.map(rowIndex => <div key={rowIndex}>{toFileLetter(rowIndex)}</div>)}</div>
+        <div className="board-files">{boardColumns.map(rowIndex => <div key={rowIndex}>{toFileLetter(rowIndex)}</div>)}</div>
     </div>
 }

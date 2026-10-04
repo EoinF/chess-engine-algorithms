@@ -25,7 +25,7 @@ const AppHeader = ({selectedMode, setMode}: AppHeaderProps) => {
 }
 
 function App() {
-  const [mode, setMode] = useState<AppMode>("benchmark");
+  const [mode, setMode] = useState<AppMode>("human_vs_cpu");
   
   return <div className="app-container">
     <AppHeader selectedMode={mode} setMode={setMode}/>

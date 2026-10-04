@@ -6,4 +6,5 @@ export type BoardStateManager<T = any> = {
     getBoardCell: (state: T, cellIndex: number) => BoardCellState;
     getBoardEval: (state: T) => number;
     isWhiteTurn: (state: T) => boolean;
+    getInitialState: () => T;
 }

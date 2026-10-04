@@ -2,7 +2,7 @@ import type { BoardStateManager } from "./boardStateManager";
 import type { BoardState } from "./BoardStateV1/state";
 import { type GameAction, type GamePiece } from "./state";
 
-function* simpleEval(boardState: BoardState, legalMoves: number[][]) {   
+function* simpleEval(boardState: BoardState, legalMoves: number[][]) {
     // yield getBoardEval(boardState);
 };
 

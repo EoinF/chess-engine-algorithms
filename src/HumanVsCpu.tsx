@@ -40,7 +40,7 @@ hxg5 29.b3 Ke6 30.a3 Kd6 31.axb4 cxb4 32.Ra5 Nd5 33.f3 Bc8 34.Kf2 Bf5
 Nf2 42.g4 Bd3 43.Re6 1/2-1/2
 `
 
-const pgnData = loadPGN(gamePgn);
+const pgnData = loadPGN(game2Pgn);
 
 export const HumanVsCpu = () => {
   const stateManager = boardStateV1Manager;

@@ -87,7 +87,7 @@ const BoardCell = ({cellState, onClick, isSelected, isHighlighted}: BoardCellPro
 }
 
 const boardColumns = Array(8).fill(0).map((_, i) => i);
-const boardRows = boardColumns.toReversed();
+const boardRows = boardColumns;
 
 type BoardProps = {
     boardState: BoardState;
@@ -107,12 +107,12 @@ export const Board = ({boardState, stateManager, performMove}: BoardProps) => {
     const legalDestinations = selectedCellIndex >= 0 ? legalMoves[selectedCellIndex]: [];
 
     return <div className="board">
-        <div className="board-ranks">{boardRows.map(rowIndex => <div key={rowIndex}>{rowIndex + 1}</div>)}</div>
+        <div className="board-ranks">{boardRows.toReversed().map(rowIndex => <div key={rowIndex}>{rowIndex + 1}</div>)}</div>
         <div className="board-contents">
             {boardRows.map(rowIndex => (
                 <div key={rowIndex} className="board-row">
-                    {boardRows.map(columnIndex => {
-                        const cellIndex = (7 - rowIndex) * 8 + columnIndex;
+                    {boardColumns.map(columnIndex => {
+                        const cellIndex = (rowIndex) * 8 + (columnIndex);
                         const isLegalMove = legalDestinations.includes(cellIndex);
                         const isSelected = selectedCellIndex === cellIndex;
                         const selectedCell = stateManager.getBoardCell(boardState, selectedCellIndex);

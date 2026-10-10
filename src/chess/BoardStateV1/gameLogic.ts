@@ -1,7 +1,7 @@
 import { emptyCell, king, pawn, type BoardCellState } from "../state";
 import type { BoardState } from "./state";
 
-const blackKingInitialCell = (8 * 7) + 4;
+const blackKingInitialCell = (8 * 7 - 1) + 4;
 const whiteKingInitialCell = 4;
 export const rookA8InitialCell = 0;
 export const rookH8InitialCell = 7;
@@ -27,7 +27,8 @@ export const applyMove = (boardState: BoardState, from: number, to: number): Boa
     // Castling
     if (cellDifference === 2 && newCells[to].piece === king) {
         const [rookFrom, rookTo] = castleMappings[to];
-        newCells[rookTo] = {...newCells[rookTo]};
+
+        newCells[rookTo] = {...newCells[rookFrom]};
         newCells[rookFrom] = {piece: emptyCell, isWhite: false};
     }
 
